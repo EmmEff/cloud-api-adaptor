@@ -23,8 +23,10 @@ import (
 	proto "google.golang.org/protobuf/proto"
 )
 
-var logger = log.New(log.Writer(), "[adaptor/cloud/gcp] ", log.LstdFlags|log.Lmsgprefix)
-var computeScope = "https://www.googleapis.com/auth/compute"
+var (
+	logger       = log.New(log.Writer(), "[adaptor/cloud/gcp] ", log.LstdFlags|log.Lmsgprefix)
+	computeScope = "https://www.googleapis.com/auth/compute"
+)
 
 const maxInstanceNameLen = 63
 
@@ -207,7 +209,6 @@ func (p *gcpProvider) selectMachineType(ctx context.Context, spec provider.Insta
 }
 
 func (p *gcpProvider) CreateInstance(ctx context.Context, podName, sandboxID string, cloudConfig cloudinit.CloudConfigGenerator, spec provider.InstanceTypeSpec) (instance *provider.Instance, err error) {
-
 	instanceName := util.GenerateInstanceName(podName, sandboxID, maxInstanceNameLen)
 	logger.Printf("CreateInstance: name: %q", instanceName)
 
@@ -234,7 +235,7 @@ func (p *gcpProvider) CreateInstance(ctx context.Context, podName, sandboxID str
 		allTagValues = append(allTagValues, tagID)
 	}
 
-	//Convert userData to base64
+	// Convert userData to base64
 	userDataEnc := base64.StdEncoding.EncodeToString([]byte(userData))
 
 	// It's expected that the image from the annotation will follow one of supported formats:
@@ -324,6 +325,11 @@ func (p *gcpProvider) CreateInstance(ctx context.Context, podName, sandboxID str
 		},
 		Metadata: &computepb.Metadata{
 			Items: []*computepb.Items{
+				// Enable serial console access (should be gated in debug build)
+				{
+					Key:   proto.String("serial-port-enable"),
+					Value: proto.String("true"),
+				},
 				{
 					Key:   proto.String("user-data"),
 					Value: proto.String(userDataEnc),
@@ -364,6 +370,7 @@ func (p *gcpProvider) CreateInstance(ctx context.Context, podName, sandboxID str
 
 	if requiresTerminatePolicy {
 		instanceResource.Scheduling = &computepb.Scheduling{
+			ProvisioningModel: proto.String("SPOT"),
 			OnHostMaintenance: proto.String("TERMINATE"),
 		}
 	}
