@@ -30,3 +30,16 @@ ln -s /dev/null "${BUILDROOT}/etc/systemd/system/systemd-pcrphase@.service"
 ln -s /dev/null "${BUILDROOT}/etc/systemd/system/systemd-pcrphase-initrd.service"
 ln -s /dev/null "${BUILDROOT}/etc/systemd/system/systemd-pcrphase-sysinit.service"
 ln -s /dev/null "${BUILDROOT}/etc/systemd/system/systemd-pcrphase.service"
+
+cat >"${BUILDROOT}/usr/lib/systemd/system/nvidia-persistenced.service" << ENDL
+[Unit]
+Description=NVIDIA Persistence Daemon
+Wants=syslog.target
+StopWhenUnneeded=true
+Before=systemd-backlight@backlight:nvidia_0.service
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/nvidia-persistenced --user nvidia-persistenced --verbose
+ExecStopPost=/bin/rm -rf /var/run/nvidia-persistenced
+ENDL
