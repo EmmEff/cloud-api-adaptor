@@ -370,8 +370,12 @@ func (p *gcpProvider) CreateInstance(ctx context.Context, podName, sandboxID str
 
 	if requiresTerminatePolicy {
 		instanceResource.Scheduling = &computepb.Scheduling{
-			ProvisioningModel: proto.String("SPOT"),
 			OnHostMaintenance: proto.String("TERMINATE"),
+		}
+
+		// (Temporarily?) hardcode provisioning model to be SPOT for specific H100 instances
+		if machineType == "a3-highgpu-1g" {
+			instanceResource.Scheduling.ProvisioningModel = proto.String("SPOT")
 		}
 	}
 
