@@ -255,14 +255,10 @@ func (p *gcpProvider) CreateInstance(ctx context.Context, podName, sandboxID str
 	}
 
 	// Select and validate machine type
-	/*
-		machineType, err := p.selectMachineType(ctx, spec)
-		if err != nil {
-			return nil, fmt.Errorf("failed to select machine type: %w", err)
-		}
-	*/
-
-	machineType := "a3-highgpu-1g"
+	machineType, err := p.selectMachineType(ctx, spec)
+	if err != nil {
+		return nil, fmt.Errorf("failed to select machine type: %w", err)
+	}
 
 	imageSizeGB, err := p.getImageSizeGB(ctx, *srcImage)
 	if err != nil {
