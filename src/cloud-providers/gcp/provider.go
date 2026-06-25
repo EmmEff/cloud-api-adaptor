@@ -296,7 +296,6 @@ func (p *gcpProvider) CreateInstance(ctx context.Context, podName, sandboxID str
 	}
 
 	networkInterface := &computepb.NetworkInterface{
-		NicType: proto.String("GVNIC"),
 		Network: proto.String(p.serviceConfig.Network),
 		AccessConfigs: []*computepb.AccessConfig{
 			{
