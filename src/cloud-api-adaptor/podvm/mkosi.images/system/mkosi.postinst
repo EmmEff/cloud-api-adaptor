@@ -15,3 +15,16 @@ cat > "${BUILDROOT}/etc/udev/rules.d/66-azure-storage.rules" << 'UDEVRULES'
 # Azure data disk symlinks by LUN
 ACTION=="add|change", SUBSYSTEM=="block", ENV{ID_VENDOR}=="Msft", ENV{ID_MODEL}=="Virtual_Disk", PROGRAM="/bin/sh -c 'readlink /sys/block/%k/device 2>/dev/null | sed -n \"s/.*[:/]\\([0-9]*\\)$/\\1/p\"'", SYMLINK+="disk/azure/data/by-lun/%c"
 UDEVRULES
+
+cat >"${BUILDROOT}/usr/lib/systemd/system/nvidia-persistenced.service" << ENDL
+[Unit]
+Description=NVIDIA Persistence Daemon
+Wants=syslog.target
+StopWhenUnneeded=true
+Before=systemd-backlight@backlight:nvidia_0.service
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/nvidia-persistenced --user nvidia-persistenced --verbose
+ExecStopPost=/bin/rm -rf /var/run/nvidia-persistenced
+ENDL

@@ -60,5 +60,5 @@ oci:
     registry: ghcr.io/kata-containers/cached-artefacts
     reference: cf82bb35c80320178bf7570252fe75d6fb263209 # v4.0.0
   guest-components:
-    registry: ghcr.io/confidential-containers/guest-components
+    registry: registry.isurfer.ca/qlad/tdx-nvidia/guest-components
     reference: dcd55ea16ea4f4bcb87c1420f16af92e9eb15f2f
