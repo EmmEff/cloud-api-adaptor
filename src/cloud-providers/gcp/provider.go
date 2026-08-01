@@ -368,6 +368,11 @@ func (p *gcpProvider) CreateInstance(ctx context.Context, podName, sandboxID str
 		},
 		Metadata: &computepb.Metadata{
 			Items: []*computepb.Items{
+				// Enable serial console access (should be gated in debug build)
+				{
+					Key:   proto.String("serial-port-enable"),
+					Value: proto.String("true"),
+				},
 				{
 					Key:   proto.String("user-data"),
 					Value: proto.String(userDataEnc),
@@ -410,6 +415,11 @@ func (p *gcpProvider) CreateInstance(ctx context.Context, podName, sandboxID str
 		instanceResource.Scheduling = &computepb.Scheduling{
 			OnHostMaintenance: proto.String("TERMINATE"),
 		}
+	}
+
+	// (Temporarily?) hardcode provisioning model to be SPOT for specific H100 instances
+	if machineType == "a3-highgpu-1g" {
+		instanceResource.Scheduling.ProvisioningModel = proto.String("SPOT")
 	}
 
 	insertReq := &computepb.InsertInstanceRequest{
