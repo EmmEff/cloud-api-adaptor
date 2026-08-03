@@ -31,6 +31,23 @@ RUN git clone -b "$MKOSI_VERSION" https://github.com/systemd/mkosi
 ENV PATH="/build/mkosi/bin:$PATH"
 RUN mkosi --version
 
+RUN patch -d mkosi -p1 <<'ENDL'
+diff --git a/mkosi/__init__.py b/mkosi/__init__.py
+index f4766ae7..40efe06e 100644
+--- a/mkosi/__init__.py
++++ b/mkosi/__init__.py
+@@ -3042,6 +3042,9 @@ def run_depmod(context: Context, *, cache: bool = False) -> None:
+             if all(m.stat().st_mtime <= mtime for m in modulesd.rglob("*.ko*")):
+                 continue
+
++        if modulesd.name == "kernel":
++            continue
++
+         with complete_step(f"Running depmod for {modulesd.name}"):
+             run(["depmod", "--all", modulesd.name], sandbox=chroot_cmd(root=context.rootoptions))
+
+ENDL
+
 RUN mkdir /image
 WORKDIR /image
 COPY mkosi.images /image/mkosi.images
