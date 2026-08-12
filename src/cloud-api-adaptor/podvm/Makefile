@@ -41,8 +41,8 @@ container: podvm-binaries image-container
 byom-e2e-container: image-byom-e2e-container
 
 DISTRO_NAME := ubuntu
-DISTRO_IMAGE := ubuntu:24.04
-DISTRO_RELEASE := noble
+DISTRO_IMAGE := ubuntu:26.04
+DISTRO_RELEASE := resolute
 DISTRO_REPOS := --repositories=universe
 PKG_INSTALL := apt-get update && apt-get install -y debian-archive-keyring
 
