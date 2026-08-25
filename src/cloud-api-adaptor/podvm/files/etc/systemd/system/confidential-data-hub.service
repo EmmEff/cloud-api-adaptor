@@ -1,16 +1,17 @@
 [Unit]
 Description=Confidential Data Hub TTRPC API Server
 
-Requires=attestation-agent.service
-
 After=attestation-agent.service network.target process-user-data.service
 BindsTo=attestation-agent.service
-ConditionPathIsSocket=/run/confidential-containers/attestation-agent/attestation-agent.sock
+# ConditionPathIsSocket=/run/confidential-containers/attestation-agent/attestation-agent.sock
 
 [Service]
 Type=simple
 Environment=OCICRYPT_KEYPROVIDER_CONFIG=/etc/ocicrypt_config.json
 Environment="CDH_DEFAULT_IMAGE_AUTHENTICATED_REGISTRY_CREDENTIALS=file:///run/peerpod/auth.json"
+ExecStartPre=/usr/bin/timeout 10 sh -c '\
+  until printf "" | nc -Uzw1 /run/confidential-containers/attestation-agent/attestation-agent.sock 2>/dev/null; \
+  do sleep 0.2; done'
 ExecStart=/bin/bash -c \
     'if [ -f /run/peerpod/cdh.toml ]; \
     then /usr/local/bin/confidential-data-hub -c /run/peerpod/cdh.toml; \

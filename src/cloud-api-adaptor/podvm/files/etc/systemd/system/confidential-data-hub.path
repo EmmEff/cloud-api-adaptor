@@ -1,7 +1,6 @@
 [Unit]
 Description=Monitor for the Attestation Agent socket
 
-After=attestation-agent.service
 Before=confidential-data-hub.service
 
 [Path]
