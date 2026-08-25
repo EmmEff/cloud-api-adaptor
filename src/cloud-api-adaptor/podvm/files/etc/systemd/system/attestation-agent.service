@@ -1,5 +1,7 @@
 [Unit]
 Description=Attestation Agent TTRPC API Server
+
+Before=confidential-data-hub.service
 After=network.target process-user-data.service
 
 [Service]

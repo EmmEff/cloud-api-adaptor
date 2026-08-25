@@ -1,6 +1,11 @@
 [Unit]
 Description=Confidential Data Hub TTRPC API Server
-After=network.target process-user-data.service
+
+Requires=attestation-agent.service
+
+After=attestation-agent.service network.target process-user-data.service
+BindsTo=attestation-agent.service
+ConditionPathIsSocket=/run/confidential-containers/attestation-agent/attestation-agent.sock
 
 [Service]
 Type=simple
