@@ -1,0 +1,11 @@
+[Unit]
+Description=Run my command at end of boot
+After=nvidia-persistenced.service multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/enable-gpu.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=boot-complete.target

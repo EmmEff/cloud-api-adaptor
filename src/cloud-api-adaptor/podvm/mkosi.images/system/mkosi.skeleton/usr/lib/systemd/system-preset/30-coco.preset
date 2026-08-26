@@ -11,3 +11,4 @@ enable image-env.service
 enable scratch-storage.path
 
 enable nvidia-persistenced.service
+enable enable-gpu.service
